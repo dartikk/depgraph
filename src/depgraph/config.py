@@ -33,6 +33,7 @@ class Config:
     ascii_tree: bool
     max_depth: int
     filter_substring: str
+    show_params: bool
 
 
 def package_name(value):
@@ -140,6 +141,10 @@ def add_output_options(parser):
         "-a", "--ascii-tree", action="store_true",
         help="вывести зависимости в виде ASCII-дерева",
     )
+    parser.add_argument(
+        "--show-params", action="store_true",
+        help="напечатать все параметры в формате ключ=значение",
+    )
 
 
 def build_parser():
@@ -207,6 +212,7 @@ def parse_args(argv=None):
         ascii_tree=args.ascii_tree,
         max_depth=args.max_depth,
         filter_substring=args.filter_substring,
+        show_params=args.show_params,
     )
     try:
         validate_config(config)
