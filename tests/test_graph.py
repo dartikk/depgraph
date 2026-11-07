@@ -1,13 +1,12 @@
 """Тесты построения графа обходом в ширину."""
-import contextlib
-import io
 import os
 import unittest
 
-from depgraph.cli import EXIT_FAILURE, EXIT_OK, run
+from depgraph.cli import EXIT_FAILURE, EXIT_OK
 from depgraph.filerepo import load_file_repo
 from depgraph.graph import GraphError, build_graph, find_cycles
 from tests import EXAMPLES_DIR
+from tests.support import run_quiet
 
 
 def build(name, root="A", depth=10, substring=""):
@@ -76,10 +75,7 @@ class CliTests(unittest.TestCase):
 
     def call(self, *argv):
         """Запускает run, возвращает (код, stdout, stderr)."""
-        out, err = io.StringIO(), io.StringIO()
-        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-            code = run(list(argv))
-        return code, out.getvalue(), err.getvalue()
+        return run_quiet(list(argv))
 
     def path(self, name):
         """Путь к файлу примера."""

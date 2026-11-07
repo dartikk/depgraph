@@ -1,15 +1,13 @@
 """Тесты режима обратных зависимостей."""
-import contextlib
-import io
 import os
 import unittest
 
 from depgraph.apk import ApkIndex, parse_index
-from depgraph.cli import EXIT_OK, run
+from depgraph.cli import EXIT_OK
 from depgraph.filerepo import load_file_repo
 from depgraph.graph import build_graph
 from tests import EXAMPLES_DIR
-from tests.support import INDEX_TEXT
+from tests.support import INDEX_TEXT, run_quiet
 
 
 def reverse_graph(name, root, depth=10, substring=""):
@@ -64,10 +62,8 @@ class ReverseCliTests(unittest.TestCase):
 
     def call(self, *argv):
         """Запускает run, возвращает (код, stdout)."""
-        out = io.StringIO()
-        with contextlib.redirect_stdout(out):
-            code = run(list(argv))
-        return code, out.getvalue()
+        code, out, _ = run_quiet(list(argv))
+        return code, out
 
     def path(self, name):
         """Путь к файлу примера."""

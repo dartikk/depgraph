@@ -1,6 +1,4 @@
 """Тесты чтения индекса Alpine и загрузки данных."""
-import contextlib
-import io
 import os
 import pathlib
 import tempfile
@@ -9,9 +7,11 @@ import unittest
 from depgraph.apk import (
     ApkError, ApkIndex, extract_index_text, parse_index, token_name,
 )
-from depgraph.cli import EXIT_FAILURE, EXIT_OK, run
+from depgraph.cli import EXIT_FAILURE, EXIT_OK
 from depgraph.fetch import FetchError, fetch_bytes, index_url
-from tests.support import INDEX_TEXT, plain_archive, signed_archive
+from tests.support import (
+    INDEX_TEXT, plain_archive, run_quiet, signed_archive,
+)
 
 
 def make_index():
@@ -121,10 +121,7 @@ class CliTests(unittest.TestCase):
 
     def call(self, argv):
         """Запускает run и возвращает (код, stdout, stderr)."""
-        out, err = io.StringIO(), io.StringIO()
-        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-            code = run(argv)
-        return code, out.getvalue(), err.getvalue()
+        return run_quiet(argv)
 
     def test_prints_direct_dependencies(self):
         """Для пакета заданной версии выводятся его зависимости."""

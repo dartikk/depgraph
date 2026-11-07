@@ -1,9 +1,17 @@
 """Общие вспомогательные функции тестов: сборка архива APKINDEX."""
+import contextlib
 import gzip
 import io
+import os
 import tarfile
+import tempfile
+from unittest import mock
+
+from depgraph.cli import run
+from depgraph.render import PNG_SIGNATURE
 
 BLOCK = 512
+FAKE_PNG = PNG_SIGNATURE + b"fake"
 
 INDEX_TEXT = """C:Q1
 P:app
@@ -42,3 +50,15 @@ def signed_archive(text):
     info.size = 4
     padded = b"sign" + bytes(BLOCK - info.size)
     return gzip.compress(info.tobuf() + padded) + plain_archive(text)
+
+
+def run_quiet(argv):
+    """Запускает приложение без сети и без файлов в текущей папке."""
+    with tempfile.TemporaryDirectory() as folder:
+        full = list(argv) + ["-o", os.path.join(folder, "g.png")]
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch("depgraph.cli.render_png", return_value=FAKE_PNG):
+            with contextlib.redirect_stdout(out):
+                with contextlib.redirect_stderr(err):
+                    code = run(full)
+    return code, out.getvalue(), err.getvalue()

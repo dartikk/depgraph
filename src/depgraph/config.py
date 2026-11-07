@@ -35,6 +35,7 @@ class Config:
     filter_substring: str
     show_params: bool
     reverse: bool
+    plantuml_jar: str
 
 
 def package_name(value):
@@ -97,6 +98,13 @@ def filter_text(value):
     return value
 
 
+def jar_file(value):
+    """Проверяет, что указанный файл PlantUML существует."""
+    if not os.path.isfile(value):
+        raise argparse.ArgumentTypeError(f"файл не найден: {value}")
+    return value
+
+
 def add_source_options(parser):
     """Добавляет параметры источника данных."""
     parser.add_argument(
@@ -145,6 +153,11 @@ def add_output_options(parser):
     parser.add_argument(
         "-a", "--ascii-tree", action="store_true",
         help="вывести зависимости в виде ASCII-дерева",
+    )
+    parser.add_argument(
+        "--plantuml-jar", type=jar_file, metavar="FILE.jar",
+        help="рисовать локальным PlantUML (нужны Java и Graphviz), "
+             "иначе используется сервер plantuml.com",
     )
     parser.add_argument(
         "--show-params", action="store_true",
@@ -219,6 +232,7 @@ def parse_args(argv=None):
         filter_substring=args.filter_substring,
         show_params=args.show_params,
         reverse=args.reverse,
+        plantuml_jar=args.plantuml_jar or "",
     )
     try:
         validate_config(config)
