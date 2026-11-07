@@ -99,6 +99,7 @@ class ApkIndex:
         self.packages = {}
         self.providers = {}
         self.selected = {}
+        self.reverse = None
         for package in packages:
             self.register(package)
 
@@ -147,6 +148,20 @@ class ApkIndex:
             if target != name and target not in result:
                 result.append(target)
         return result
+
+    def dependents(self, name):
+        """Пакеты, которые напрямую зависят от name."""
+        if self.reverse is None:
+            self.reverse = self.build_reverse()
+        return list(self.reverse.get(name, []))
+
+    def build_reverse(self):
+        """Строит карту «пакет -> пакеты, зависящие от него»."""
+        reverse = {}
+        for name in self.packages:
+            for target in self.dependencies(name):
+                reverse.setdefault(target, []).append(name)
+        return reverse
 
 
 def load_index(repo):

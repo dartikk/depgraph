@@ -34,6 +34,7 @@ class Config:
     max_depth: int
     filter_substring: str
     show_params: bool
+    reverse: bool
 
 
 def package_name(value):
@@ -122,6 +123,10 @@ def add_graph_options(parser):
         "-d", "--max-depth", type=positive_int, default=DEFAULT_DEPTH,
         metavar="N",
         help=f"максимальная глубина анализа (по умолчанию {DEFAULT_DEPTH})",
+    )
+    parser.add_argument(
+        "--reverse", action="store_true",
+        help="вывести обратные зависимости: кто зависит от пакета",
     )
     parser.add_argument(
         "-f", "--filter", dest="filter_substring", type=filter_text,
@@ -213,6 +218,7 @@ def parse_args(argv=None):
         max_depth=args.max_depth,
         filter_substring=args.filter_substring,
         show_params=args.show_params,
+        reverse=args.reverse,
     )
     try:
         validate_config(config)

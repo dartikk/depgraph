@@ -44,6 +44,7 @@ class FileRepo:
     def __init__(self, graph):
         """Запоминает граф и множество всех упомянутых пакетов."""
         self.graph = graph
+        self.reverse = None
         self.names = set(graph)
         for dependencies in graph.values():
             self.names.update(dependencies)
@@ -61,6 +62,15 @@ class FileRepo:
     def dependencies(self, name):
         """Прямые зависимости пакета."""
         return list(self.graph.get(name, []))
+
+    def dependents(self, name):
+        """Пакеты, которые напрямую зависят от name."""
+        if self.reverse is None:
+            self.reverse = {}
+            for owner, dependencies in self.graph.items():
+                for target in dependencies:
+                    self.reverse.setdefault(target, []).append(owner)
+        return list(self.reverse.get(name, []))
 
 
 def load_file_repo(path):

@@ -19,6 +19,7 @@ class Graph:
     root: str
     children: dict = field(default_factory=dict)
     depths: dict = field(default_factory=dict)
+    reverse: bool = False
 
     def edge_count(self):
         """Число рёбер графа."""
@@ -30,10 +31,11 @@ def is_excluded(name, substring):
     return bool(substring) and substring in name
 
 
-def build_graph(root, neighbors, max_depth, substring=""):
+def build_graph(root, neighbors, max_depth, substring="", reverse=False):
     """Строит граф от root обходом в ширину.
 
-    neighbors(name) возвращает соседей узла. Узлы глубже max_depth не
+    neighbors(name) возвращает соседей узла: зависимости пакета или, при
+    reverse=True, пакеты, которые от него зависят. Узлы глубже max_depth не
     раскрываются, пакеты с подстрокой в имени пропускаются. Каждый узел
     обходится один раз, поэтому циклы не приводят к зависанию; ребро,
     замыкающее цикл, сохраняется в графе.
@@ -42,7 +44,7 @@ def build_graph(root, neighbors, max_depth, substring=""):
         raise GraphError(
             f"пакет {root} исключён фильтром {substring!r}: граф пуст"
         )
-    graph = Graph(root, {root: []}, {root: 0})
+    graph = Graph(root, {root: []}, {root: 0}, reverse)
     queue = deque([root])
     while queue:
         node = queue.popleft()

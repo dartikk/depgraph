@@ -8,7 +8,7 @@ from depgraph.config import format_params, parse_args
 from depgraph.fetch import FetchError
 from depgraph.filerepo import FileRepoError, load_file_repo
 from depgraph.graph import GraphError, build_graph
-from depgraph.report import describe_graph
+from depgraph.report import describe
 
 EXIT_OK = 0
 EXIT_FAILURE = 1
@@ -32,11 +32,12 @@ def execute(config):
     """Строит граф зависимостей и печатает его описание."""
     source = load_source(config)
     source.check_root(config.package, config.version)
+    neighbors = source.dependents if config.reverse else source.dependencies
     graph = build_graph(
-        config.package, source.dependencies,
-        config.max_depth, config.filter_substring,
+        config.package, neighbors, config.max_depth,
+        config.filter_substring, config.reverse,
     )
-    for line in describe_graph(graph, config.max_depth):
+    for line in describe(graph, config.max_depth):
         print(line)
     return EXIT_OK
 
