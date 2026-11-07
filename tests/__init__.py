@@ -5,3 +5,5 @@ import sys
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.join(os.path.dirname(TESTS_DIR), "src")
 sys.path.insert(0, SRC_DIR)
+ROOT_DIR = os.path.dirname(TESTS_DIR)
+EXAMPLES_DIR = os.path.join(ROOT_DIR, "examples")

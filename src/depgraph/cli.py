@@ -6,19 +6,13 @@ import sys
 from depgraph.apk import ApkError, load_index
 from depgraph.config import format_params, parse_args
 from depgraph.fetch import FetchError
+from depgraph.filerepo import FileRepoError, load_file_repo
+from depgraph.graph import GraphError, build_graph
+from depgraph.report import describe_graph
 
 EXIT_OK = 0
 EXIT_FAILURE = 1
-EXIT_USAGE = 2
-
-
-def print_direct(package, dependencies):
-    """Печатает прямые зависимости пакета."""
-    print(f"Прямые зависимости пакета {package.name} ({package.version}):")
-    if not dependencies:
-        print("  (нет)")
-    for name in dependencies:
-        print(f"  {name}")
+APP_ERRORS = (ApkError, FetchError, FileRepoError, GraphError)
 
 
 def fail(message, code):
@@ -27,18 +21,33 @@ def fail(message, code):
     return code
 
 
+def load_source(config):
+    """Открывает тестовый файл или реальный репозиторий."""
+    if config.test_mode:
+        return load_file_repo(config.repo)
+    return load_index(config.repo)
+
+
+def execute(config):
+    """Строит граф зависимостей и печатает его описание."""
+    source = load_source(config)
+    source.check_root(config.package, config.version)
+    graph = build_graph(
+        config.package, source.dependencies,
+        config.max_depth, config.filter_substring,
+    )
+    for line in describe_graph(graph, config.max_depth):
+        print(line)
+    return EXIT_OK
+
+
 def run(argv=None):
     """Выполняет программу и возвращает код завершения."""
     config = parse_args(argv)
     if config.show_params:
         for line in format_params(config):
             print(line)
-    if config.test_mode:
-        return fail("тестовый режим будет добавлен на этапе 3", EXIT_USAGE)
     try:
-        index = load_index(config.repo)
-        package = index.check_root(config.package, config.version)
-    except (FetchError, ApkError) as error:
+        return execute(config)
+    except APP_ERRORS as error:
         return fail(str(error), EXIT_FAILURE)
-    print_direct(package, index.dependencies(package.name))
-    return EXIT_OK

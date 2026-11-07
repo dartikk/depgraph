@@ -9,7 +9,7 @@ import unittest
 from depgraph.apk import (
     ApkError, ApkIndex, extract_index_text, parse_index, token_name,
 )
-from depgraph.cli import EXIT_FAILURE, EXIT_OK, EXIT_USAGE, run
+from depgraph.cli import EXIT_FAILURE, EXIT_OK, run
 from depgraph.fetch import FetchError, fetch_bytes, index_url
 from tests.support import INDEX_TEXT, plain_archive, signed_archive
 
@@ -127,13 +127,17 @@ class CliTests(unittest.TestCase):
         return code, out.getvalue(), err.getvalue()
 
     def test_prints_direct_dependencies(self):
-        """Выводятся прямые зависимости пакета заданной версии."""
+        """Для пакета заданной версии выводятся его зависимости."""
         code, out, _ = self.call(["-p", "app", "-r", self.repo,
-                                  "-V", "1.0-r0"])
+                                  "-V", "1.0-r0", "-d", "1"])
         self.assertEqual(code, EXIT_OK)
-        self.assertIn("Прямые зависимости пакета app (1.0-r0):", out)
-        self.assertIn("  libfoo", out)
-        self.assertIn("  musl", out)
+        self.assertIn("app (глубина 0) -> libfoo, musl, busybox", out)
+
+    def test_transitive_dependencies(self):
+        """При большей глубине раскрываются зависимости зависимостей."""
+        _, out, _ = self.call(["-p", "app", "-r", self.repo,
+                               "-V", "1.0-r0", "-d", "2"])
+        self.assertIn("libfoo (глубина 1) -> musl", out)
 
     def test_wrong_version(self):
         """Неверная версия — ошибка со списком доступных версий."""
@@ -153,14 +157,6 @@ class CliTests(unittest.TestCase):
         _, out, _ = self.call(["-p", "app", "-r", self.repo, "-V", "1.0-r0",
                                "--show-params"])
         self.assertIn("package=app", out)
-
-    def test_test_mode_not_supported_yet(self):
-        """На этом этапе тестовый режим ещё не поддержан."""
-        path = os.path.join(self.folder.name, "t.txt")
-        with open(path, "w", encoding="utf-8") as handle:
-            handle.write("A: B\n")
-        code, _, _ = self.call(["-p", "A", "-r", path, "-t"])
-        self.assertEqual(code, EXIT_USAGE)
 
 
 if __name__ == "__main__":

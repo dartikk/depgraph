@@ -1,0 +1,6 @@
+# Имена с общей подстрокой LIB для проверки фильтра
+APP: LIBA LIBB CORE
+LIBA: UTIL
+LIBB: UTIL CORE
+CORE:
+UTIL: CORE
