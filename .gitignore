@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.idea/
+.vscode/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+graph.png
+graph.puml
+out/
+*.zip
