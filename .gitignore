@@ -10,3 +10,7 @@ graph.png
 graph.puml
 out/
 *.zip
+*.png
+*.puml
+.venv/
+venv/
