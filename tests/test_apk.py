@@ -107,7 +107,7 @@ class FetchTests(unittest.TestCase):
 class CliTests(unittest.TestCase):
     """Запуск приложения целиком на локальном репозитории."""
 
-    def setUp(self):
+    def setUp(self):  # noqa: N802
         """Создаёт папку «репозитория» с архивом индекса."""
         self.folder = tempfile.TemporaryDirectory()
         path = os.path.join(self.folder.name, "APKINDEX.tar.gz")
@@ -115,7 +115,7 @@ class CliTests(unittest.TestCase):
             handle.write(signed_archive(INDEX_TEXT))
         self.repo = pathlib.Path(self.folder.name).as_uri()
 
-    def tearDown(self):
+    def tearDown(self):  # noqa: N802
         """Удаляет временную папку."""
         self.folder.cleanup()
 
