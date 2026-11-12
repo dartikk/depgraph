@@ -107,7 +107,7 @@ class FetchTests(unittest.TestCase):
 class CliTests(unittest.TestCase):
     """Запуск приложения целиком на локальном репозитории."""
 
-    def setUp(self):  # noqa: N802
+    def set_up(self):
         """Создаёт папку «репозитория» с архивом индекса."""
         self.folder = tempfile.TemporaryDirectory()
         path = os.path.join(self.folder.name, "APKINDEX.tar.gz")
@@ -115,7 +115,7 @@ class CliTests(unittest.TestCase):
             handle.write(signed_archive(INDEX_TEXT))
         self.repo = pathlib.Path(self.folder.name).as_uri()
 
-    def tearDown(self):  # noqa: N802
+    def tear_down(self):
         """Удаляет временную папку."""
         self.folder.cleanup()
 
@@ -154,6 +154,11 @@ class CliTests(unittest.TestCase):
         _, out, _ = self.call(["-p", "app", "-r", self.repo, "-V", "1.0-r0",
                                "--show-params"])
         self.assertIn("package=app", out)
+
+
+# unittest uses these lifecycle hook names; implementations follow snake_case.
+setattr(CliTests, "setUp", CliTests.set_up)
+setattr(CliTests, "tearDown", CliTests.tear_down)
 
 
 if __name__ == "__main__":
