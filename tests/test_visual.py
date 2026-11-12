@@ -150,13 +150,13 @@ class RenderTests(unittest.TestCase):
 class CliTests(unittest.TestCase):
     """Запуск приложения с выводом дерева и файлов."""
 
-    def setUp(self):
+    def setUp(self):  # noqa: N802
         """Создаёт временную папку для результатов."""
         self.folder = tempfile.TemporaryDirectory()
         self.png = os.path.join(self.folder.name, "g.png")
         self.puml = os.path.join(self.folder.name, "g.puml")
 
-    def tearDown(self):
+    def tearDown(self):  # noqa: N802
         """Удаляет временную папку."""
         self.folder.cleanup()
 
