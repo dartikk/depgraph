@@ -150,13 +150,13 @@ class RenderTests(unittest.TestCase):
 class CliTests(unittest.TestCase):
     """Запуск приложения с выводом дерева и файлов."""
 
-    def setUp(self):  # noqa: N802
+    def set_up(self):
         """Создаёт временную папку для результатов."""
         self.folder = tempfile.TemporaryDirectory()
         self.png = os.path.join(self.folder.name, "g.png")
         self.puml = os.path.join(self.folder.name, "g.puml")
 
-    def tearDown(self):  # noqa: N802
+    def tear_down(self):
         """Удаляет временную папку."""
         self.folder.cleanup()
 
@@ -206,6 +206,11 @@ class CliTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 parse_args(argv)
         self.assertIn("файл не найден", err.getvalue())
+
+
+# unittest uses these lifecycle hook names; implementations follow snake_case.
+setattr(CliTests, "setUp", CliTests.set_up)
+setattr(CliTests, "tearDown", CliTests.tear_down)
 
 
 if __name__ == "__main__":
