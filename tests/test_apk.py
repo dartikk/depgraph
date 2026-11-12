@@ -156,7 +156,6 @@ class CliTests(unittest.TestCase):
         self.assertIn("package=app", out)
 
 
-# unittest uses these lifecycle hook names; implementations follow snake_case.
 setattr(CliTests, "setUp", CliTests.set_up)
 setattr(CliTests, "tearDown", CliTests.tear_down)
 
