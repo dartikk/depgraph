@@ -208,7 +208,6 @@ class CliTests(unittest.TestCase):
         self.assertIn("файл не найден", err.getvalue())
 
 
-# unittest uses these lifecycle hook names; implementations follow snake_case.
 setattr(CliTests, "setUp", CliTests.set_up)
 setattr(CliTests, "tearDown", CliTests.tear_down)
 
